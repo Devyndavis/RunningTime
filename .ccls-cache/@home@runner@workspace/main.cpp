@@ -2,6 +2,8 @@
 #include <vector>
 #include <algorithm> 
 #include <chrono>
+#include <cstdlib>  // For rand() and srand()
+#include <ctime>    // For time()
 
 using namespace std;
 
@@ -38,37 +40,59 @@ int iterativeBinarySearch(const vector<int>& arr, int target) {
     return -1;
 }
 
+// Function to generate a vector with random numbers in range 1-100
+vector<int> generateRandomVector(int size) {
+    vector<int> arr;
+    for (int i = 0; i < size; i++) {
+        arr.push_back(rand() % 100 + 1); // Random number between 1 and 100
+    }
+    sort(arr.begin(), arr.end()); // Sorting before binary search
+    return arr;
+}
+
 // Function to run tests
 void runTests(const vector<int>& arr, int target) {
+    cout << "Searching for target: " << target << endl;
+
+    int index;
+
     auto start = chrono::high_resolution_clock::now();
-    int index = recursiveBinarySearch(arr, target);
+    index = recursiveBinarySearch(arr, target);
     auto end = chrono::high_resolution_clock::now();
-    cout << "Recursive Binary Search: Target " << target << (index != -1 ? " found at index " : " not found") << index << endl;
+    cout << "Recursive Binary Search: " << (index != -1 ? "Found at index " : "Not found") << index << endl;
     cout << "Time: " << chrono::duration_cast<chrono::microseconds>(end - start).count() << " µs\n";
 
     start = chrono::high_resolution_clock::now();
     index = iterativeBinarySearch(arr, target);
     end = chrono::high_resolution_clock::now();
-    cout << "Iterative Binary Search: Target " << target << (index != -1 ? " found at index " : " not found") << index << endl;
+    cout << "Iterative Binary Search: " << (index != -1 ? "Found at index " : "Not found") << index << endl;
     cout << "Time: " << chrono::duration_cast<chrono::microseconds>(end - start).count() << " µs\n";
 
     start = chrono::high_resolution_clock::now();
     index = sequentialSearch(arr, target);
     end = chrono::high_resolution_clock::now();
-    cout << "Sequential Search: Target " << target << (index != -1 ? " found at index " : " not found") << index << endl;
+    cout << "Sequential Search: " << (index != -1 ? "Found at index " : "Not found") << index << endl;
     cout << "Time: " << chrono::duration_cast<chrono::microseconds>(end - start).count() << " µs\n";
+
+    cout << "------------------------------------\n";
 }
 
 int main() {
-    vector<int> arr = {2, 3, 4, 10, 40, 50, 70, 80};  // Sample data
-    sort(arr.begin(), arr.end());
+    srand(time(0)); // Seed for random number generation
 
-    int target1 = 10;  // Present
-    int target2 = 99;  // Not Present
+    // Generate random vector
+    vector<int> arr = generateRandomVector(20); // Adjust size as needed
 
-    cout << "Testing with small dataset...\n";
-    runTests(arr, target1);
-    runTests(arr, target2);
+    // Display vector contents
+    cout << "Generated vector:\n";
+    for (int num : arr) cout << num << " ";
+    cout << "\n------------------------------------\n";
+
+    // Generate a random target
+    int target = rand() % 100 + 1;
+
+    // Run searches
+    runTests(arr, target);
 
     return 0;
 }
